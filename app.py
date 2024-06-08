@@ -68,10 +68,7 @@ if prompt := st.chat_input(placeholder='Enter your message:', max_chars=256):
         except RateLimitError:
             st.warning('OpenAI API rate limit exceeded!', icon='⚠')
             st.stop()
-    # if message.role == "assistant":
-    #     st.write(message.content)
-    # else:
-    #     st.write(f'You: {message.content}')
+
 # clear chat history button
 if st.button('Clear Chat History'):
     st.session_state.messages = [
@@ -80,18 +77,3 @@ if st.button('Clear Chat History'):
             content="Hello! I'm here to help you with your questions."
         )
     ]
-# def generate_response(input_text):
-#     llm = OpenAI(temperature=0.7, openai_api_key=openai_api_key)
-#     st.info(llm(input_text))
-
-# with st.form('my_form'):
-#     text = st.text_area('Enter text:', 'What are the three key pieces of advice for learning how to code?')
-#     submitted = st.form_submit_button('Submit')
-#     if not openai_api_key.startswith('sk-'):
-#         st.warning('Please enter your OpenAI API key!', icon='⚠')
-#     if submitted and openai_api_key.startswith('sk-'):
-#         generate_response(text)
-#     else:
-#         st.warning('Please enter your OpenAI API key!', icon='⚠')
-#         st.info('You can get your API key from the OpenAI dashboard.', icon='ℹ')
-#         st.stop()
