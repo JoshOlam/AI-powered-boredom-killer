@@ -43,6 +43,7 @@ with st.sidebar:
         placeholder='Enter your OpenAI API Key',
         help='Enter your OpenAI API Key',
     )
+
     temperature = st.slider(
         label='Temperature',
         min_value=0.0,
@@ -51,6 +52,7 @@ with st.sidebar:
         help="Controls randomness: Lowering results in less random completions. \
 As the temperature approaches zero,the model will become deterministic and repetitive."
     )
+
     max_tokens = st.number_input(
         label='Max Tokens',
         min_value=1,
@@ -61,6 +63,7 @@ As the temperature approaches zero,the model will become deterministic and repet
 completion. The exact limit varies by model. (One token is roughly 4 characters for \
 standard English text)"
     )
+
     top_p = st.slider(
         label='Top P',
         min_value=0.0,
@@ -69,6 +72,7 @@ standard English text)"
         help="Controls diversity via nucleus sampling: 0.5 means half of all \
 likelihood-weighted options are considered."
     )
+
     frequency_penalty = st.slider(
         label='Frequency Penalty',
         min_value=0.0,
@@ -77,6 +81,7 @@ likelihood-weighted options are considered."
         help="How much to penalize new tokens based on their existing frequency in \
 the text so far. Decreases the model's likelihood to repeat the same line verbatim."
     )
+
     presence_penalty = st.slider(
         label='Presence Penalty',
         min_value=0.0,
@@ -85,6 +90,7 @@ the text so far. Decreases the model's likelihood to repeat the same line verbat
         help="How much to penalize new tokens based on whether they appear in the text \
 so far. Increases the model's likelihood to talk about new topics."
     )
+
     model = st.selectbox(
         label='Model',
         options=[
@@ -95,14 +101,10 @@ so far. Increases the model's likelihood to talk about new topics."
         index=0,
         help="The model to use for the completion."
     )
-    llm = ChatOpenAI(
-        openai_api_key=openai_api_key,
-        model=model,
-        temperature=temperature,
-        max_tokens=max_tokens,
-        top_p=top_p,
-        frequency_penalty=frequency_penalty,
-        presence_penalty=presence_penalty,
+    stream_response = st.checkbox(
+        label='Stream Response',
+        value=True,
+        help="Stream the response as it is generated."
     )
 
 if "messages" not in st.session_state:
@@ -138,9 +140,13 @@ if prompt := st.chat_input(placeholder='Enter your message:', max_chars=256):
             stream_handler = StreamHandler(st.empty())
             llm = ChatOpenAI(
                 openai_api_key=openai_api_key,
-                model="gpt-3.5-turbo",
-                temperature=1.0,
-                streaming=True,
+                model=model,
+                temperature=temperature,
+                max_tokens=max_tokens,
+                top_p=top_p,
+                frequency_penalty=frequency_penalty,
+                presence_penalty=presence_penalty,
+                streaming=stream_response,
                 callbacks=[stream_handler]
             )
             response = llm.invoke(st.session_state.messages)
