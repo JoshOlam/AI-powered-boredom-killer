@@ -14,6 +14,7 @@ st.title('🦜🔗 Quickstart App')
 with st.sidebar:
     openai_api_key = st.text_input('OpenAI API Key', type='password')
 
+
 if "messages" not in st.session_state:
     st.session_state.messages = [
         ChatMessage(
@@ -71,7 +72,14 @@ if prompt := st.chat_input(placeholder='Enter your message:', max_chars=256):
     #     st.write(message.content)
     # else:
     #     st.write(f'You: {message.content}')
-
+# clear chat history button
+if st.button('Clear Chat History'):
+    st.session_state.messages = [
+        ChatMessage(
+            role="assistant",
+            content="Hello! I'm here to help you with your questions."
+        )
+    ]
 # def generate_response(input_text):
 #     llm = OpenAI(temperature=0.7, openai_api_key=openai_api_key)
 #     st.info(llm(input_text))
