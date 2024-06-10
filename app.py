@@ -143,11 +143,13 @@ if prompt := st.chat_input(placeholder='Enter your message:', max_chars=256):
                 model=model,
                 temperature=temperature,
                 max_tokens=max_tokens,
-                top_p=top_p,
-                frequency_penalty=frequency_penalty,
-                presence_penalty=presence_penalty,
                 streaming=stream_response,
-                callbacks=[stream_handler]
+                callbacks=[stream_handler],
+                model_kwargs={
+                    "presence_penalty": presence_penalty,
+                    "frequency_penalty": frequency_penalty,
+                    "top_p": top_p,
+                }
             )
             response = llm.invoke(st.session_state.messages)
             st.session_state.messages.append(
