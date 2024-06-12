@@ -8,7 +8,7 @@ import streamlit as st
 from openai import AuthenticationError, RateLimitError
 
 from utils.helpers import StreamHandler
-from menu import menu
+# from menu import menu
 from configurations.openai_config import openai_config
 
 
