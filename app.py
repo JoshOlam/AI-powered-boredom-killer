@@ -8,13 +8,13 @@ import streamlit as st
 from openai import AuthenticationError, RateLimitError
 
 from utils.helpers import StreamHandler
-
-# Set the page configurations
+from menu import menu
+from configurations.openai_config import openai_config
 
 
 # Set the page icon and title
 st.set_page_config(
-    page_title="AI-Powered-Boredome-Killer with OpenAI and Langchain",
+    page_title="AI-Powered-Boredom-Killer with OpenAI and Langchain",
     page_icon="🌐",
     layout="centered",
     initial_sidebar_state="expanded",
@@ -26,9 +26,30 @@ st.set_page_config(
 )
 
 # 
-st.title('🦜🔗 AI-Powered-Boredome-Killer')
+st.title('🦜🔗 AI-Powered-Boredom-Killer')
 st.subheader('Powered by OpenAI and Langchain')
 st.subheader('Served to You by Streamlit')
+
+# # Initialize st.session_state.role to None
+# if "role" not in st.session_state:
+#     st.session_state.role = None
+
+# # Retrieve the role from Session State to initialize the widget
+# st.session_state._role = st.session_state.role
+
+# def set_role():
+#     # Callback function to save the role selection to Session State
+#     st.session_state.role = st.session_state._role
+
+
+# # Selectbox to choose role
+# st.selectbox(
+#     "Select your role:",
+#     [None, "user", "admin", "super-admin"],
+#     key="_role",
+#     on_change=set_role,
+# )
+# menu() # Render the dynamic menu!
 
 # with st.sidebar:
 
@@ -44,74 +65,14 @@ with st.sidebar:
         help='Enter your OpenAI API Key',
     )
 
-    temperature = st.slider(
-        label='Temperature',
-        min_value=0.0,
-        max_value=2.0,
-        value=0.7,
-        help="Controls randomness: Lowering results in less random completions. \
-As the temperature approaches zero,the model will become deterministic and repetitive."
-    )
-
-    max_tokens = st.number_input(
-        label='Max Tokens',
-        min_value=1,
-        max_value=4095,
-        value=100,
-        step=10,
-        help="The maximum number of tokens to generate shared between the prompt and \
-completion. The exact limit varies by model. (One token is roughly 4 characters for \
-standard English text)"
-    )
-
-    top_p = st.slider(
-        label='Top P',
-        min_value=0.0,
-        max_value=1.0,
-        value=1.0,
-        help="Controls diversity via nucleus sampling: 0.5 means half of all \
-likelihood-weighted options are considered."
-    )
-
-    frequency_penalty = st.slider(
-        label='Frequency Penalty',
-        min_value=0.0,
-        max_value=1.0,
-        value=0.0,
-        help="How much to penalize new tokens based on their existing frequency in \
-the text so far. Decreases the model's likelihood to repeat the same line verbatim."
-    )
-
-    presence_penalty = st.slider(
-        label='Presence Penalty',
-        min_value=0.0,
-        max_value=1.0,
-        value=0.0,
-        help="How much to penalize new tokens based on whether they appear in the text \
-so far. Increases the model's likelihood to talk about new topics."
-    )
-
-    model = st.selectbox(
-        label='Model',
-        options=[
-            'gpt-3.5-turbo',
-            'gpt-4-turbo',
-            'gpt-4o',
-        ],
-        index=0,
-        help="The model to use for the completion."
-    )
-    stream_response = st.checkbox(
-        label='Stream Response',
-        value=True,
-        help="Stream the response as it is generated."
-    )
+temperature, max_tokens, top_p, frequency_penalty, presence_penalty, \
+    model, stream_response = openai_config()
 
 if "messages" not in st.session_state:
     st.session_state.messages = [
         ChatMessage(
             role="assistant",
-            content="Hello! I'm here to help you with your questions."
+            content="Hello 👋! I'm here to help you with your questions."
         )
     ]
 
