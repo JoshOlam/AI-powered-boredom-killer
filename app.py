@@ -1,6 +1,14 @@
 from langchain.schema import ChatMessage
 from langchain_openai.chat_models import ChatOpenAI
-from langchain_openai.llms import OpenAI
+
+from langchain_core.prompts import (
+    ChatPromptTemplate,
+    HumanMessagePromptTemplate,
+    MessagesPlaceholder,
+)
+from langchain_core.messages import HumanMessage, SystemMessage
+
+from langchain_core.output_parsers import StrOutputParser
 
 import streamlit as st
 # from langchain.llms.openai import OpenAI
@@ -30,29 +38,6 @@ st.title('🦜🔗 AI-Powered-Boredom-Killer')
 st.subheader('Powered by OpenAI and Langchain')
 st.subheader('Served to You by Streamlit')
 
-# # Initialize st.session_state.role to None
-# if "role" not in st.session_state:
-#     st.session_state.role = None
-
-# # Retrieve the role from Session State to initialize the widget
-# st.session_state._role = st.session_state.role
-
-# def set_role():
-#     # Callback function to save the role selection to Session State
-#     st.session_state.role = st.session_state._role
-
-
-# # Selectbox to choose role
-# st.selectbox(
-#     "Select your role:",
-#     [None, "user", "admin", "super-admin"],
-#     key="_role",
-#     on_change=set_role,
-# )
-# menu() # Render the dynamic menu!
-
-# with st.sidebar:
-
 # Set OpenAI model configurations
 with st.sidebar:
     st.subheader('OpenAI Model Configurations')
@@ -78,6 +63,26 @@ if "messages" not in st.session_state:
 
 for message in st.session_state.messages:
     st.chat_message(message.role).write(message.content)
+
+# Build the prompt
+system_messages = """You are an AI assistant powered by OpenAI and \
+Langchain, who is extremely sarcastic and ironical, and helps users kill \
+boredom with sarcasm, jokes, ironies, and meaningful games. Now, start \
+chatting by suggesting what you want the user to do."""
+system_prompt = ChatPromptTemplate.from_messages(
+    [
+        SystemMessage(
+            content=system_messages
+        ),
+        # HumanMessagePromptTemplate.from_template(
+        #     template="Enter your message:"
+        # ),
+        MessagesPlaceholder(variable_name="chat_history", optional=True),
+    ]
+)
+
+# Output parser
+output_parser = StrOutputParser()
 
 if prompt := st.chat_input(placeholder='Enter your message:', max_chars=256):
     st.session_state.messages.append(
@@ -112,7 +117,10 @@ if prompt := st.chat_input(placeholder='Enter your message:', max_chars=256):
                     "top_p": top_p,
                 }
             )
-            response = llm.invoke(st.session_state.messages)
+            llm_chain = system_prompt | llm #| output_parser
+            response = llm_chain.invoke(
+                {"chat_history": st.session_state.messages},
+            )
             st.session_state.messages.append(
                 ChatMessage(
                     role="assistant",
@@ -133,7 +141,7 @@ if st.button('Clear Chat History'):
     st.session_state.messages = [
         ChatMessage(
             role="assistant",
-            content="Hello! I'm here to help you with your questions."
+            content="Hello 👋! I'm here to help you with your questions."
         )
     ]
     st.rerun()
